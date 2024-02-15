@@ -1,0 +1,182 @@
+.jumbotron {
+  /* width: 30wh;
+    height: 30vh; */
+  color: #fff;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  -webkit-animation: Gradient 15s ease infinite;
+  -moz-animation: Gradient 15s ease infinite;
+  animation: Gradient 15s ease infinite;
+}
+
+@-webkit-keyframes Gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@-moz-keyframes Gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes Gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+/* Single product page */
+.card {
+  border: none;
+}
+.product {
+  background-color: #eee;
+}
+.brand {
+  font-size: 13px;
+}
+.act-price {
+  color: red;
+  font-weight: 700;
+}
+.dis-price {
+  text-decoration: line-through;
+}
+.about {
+  font-size: 14px;
+}
+.color {
+  margin-bottom: 10px;
+}
+label.radio {
+  cursor: pointer;
+}
+label.radio input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+label.radio span {
+  padding: 2px 9px;
+  border: 2px solid #ff0000;
+  display: inline-block;
+  color: #ff0000;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+label.radio input:checked + span {
+  border-color: #ff0000;
+  background-color: #ff0000;
+  color: #fff;
+}
+.btn-danger {
+  background-color: #ff0000 !important;
+  border-color: #ff0000 !important;
+}
+.btn-danger:hover {
+  background-color: #da0606 !important;
+  border-color: #da0606 !important;
+}
+.btn-danger:focus {
+  box-shadow: none;
+}
+.cart i {
+  margin-right: 10px;
+}
+button > *,
+.disabled-link {
+  pointer-events: none;
+}
+dialog.delete {
+  width: 400px !important;
+}
+/* Form Livraison & Facturation */
+.gradient-custom {
+  background: -webkit-linear-gradient(left, #3931af, #00c6ff);
+}
+.card-custom {
+  border-bottom-left-radius: 10% 50%;
+  border-top-left-radius: 10% 50%;
+  background-color: #f8f9fa;
+}
+.input-custom {
+  background-color: white;
+}
+.white-text {
+  color: hsl(52, 0%, 98%);
+  font-weight: 100;
+  font-size: 14px;
+}
+.back-button {
+  background-color: hsl(52, 0%, 98%);
+  font-weight: 700;
+  color: black;
+  margin-top: 50px;
+}
+
+/* Commande liste */
+.cell-1 {
+  border-collapse: separate;
+  border-spacing: 0 4em;
+  background: #fff;
+  border-bottom: 5px solid transparent;
+  /*background-color: gold;*/
+  background-clip: padding-box;
+}
+
+thead {
+  background: #dddcdc;
+}
+
+.toggle-btn {
+  width: 40px;
+  height: 21px;
+  background: grey;
+  border-radius: 50px;
+  padding: 3px;
+  cursor: pointer;
+  -webkit-transition: all 0.3s 0.1s ease-in-out;
+  -moz-transition: all 0.3s 0.1s ease-in-out;
+  -o-transition: all 0.3s 0.1s ease-in-out;
+  transition: all 0.3s 0.1s ease-in-out;
+}
+
+.toggle-btn > .inner-circle {
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  border-radius: 50%;
+  -webkit-transition: all 0.3s 0.1s ease-in-out;
+  -moz-transition: all 0.3s 0.1s ease-in-out;
+  -o-transition: all 0.3s 0.1s ease-in-out;
+  transition: all 0.3s 0.1s ease-in-out;
+}
+
+.toggle-btn.active {
+  background: blue !important;
+}
+
+.toggle-btn.active > .inner-circle {
+  margin-left: 19px;
+}
