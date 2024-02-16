@@ -242,3 +242,17 @@ export const changeOrderStatus = (token, idOrder, params) => {
     .then(res => res.json())
     .catch(err => console.error(err));
 };
+
+// Changer le role de l'utilisateur
+export const upUserRole = (token, id, role) => {
+  return fetch(`${API_URL}api/user/profile/role/${id}`, {
+    method: "PATCH",
+    headers: {
+      Accept: "application/json",
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({role}),
+  })
+    .then((res) => res.json());
+}
