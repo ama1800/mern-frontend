@@ -3,6 +3,7 @@ import Layout from "../../core/partials/Layout";
 import sidebar from "../layouts/sidebar";
 import {
   changeOrderStatus,
+  deleteItem,
   getOrders,
   getStatus,
 } from "../../core/api/apiCore";
@@ -12,15 +13,14 @@ import moment from "moment";
 import "moment/locale/fr";
 import ModalShowOrder from "../../core/partials/ModalShowOrder";
 import Actions from "../../core/partials/Actions";
+import ModalDelete from "../../core/partials/ModalDelete";
 
 function Commandes() {
-
   const [orders, setOrders] = useState([]);
   const [openDetails, setOpenDetails] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const [actualStatus, setActualStatus] = useState(null);
-  const [newStatus, setNewStatus] = useState(null);
-  const [idOrderToShow, setIdOrderToShow] = useState(null);
-  const [orderToShow, setOrderToShow] = useState({});
+  const [orderToModif, setOrderToModif] = useState({});
   const [allStatus, setAllStatus] = useState([]);
 
   const { token, user } = isAuth();
@@ -45,57 +45,73 @@ function Commandes() {
 
   useEffect(() => {
     loadOrders();
-  }, []);
-
-  useEffect(() => {
-    if (idOrderToShow) {
-      const orderById = (order) => {
-        return order._id === idOrderToShow;
-      };
-      const ord = orders.find(orderById);
-      setOrderToShow(ord);
-      setActualStatus(allStatus[ord.status]);
-      setOpenDetails(true);
-    }
-  }, [idOrderToShow, allStatus, orders]);
+  }, [actualStatus]);
 
   // Assign input value to user properties (input onChange)
   const handleChange = (e) => {
-    if (e.target.id === "status") setNewStatus(e.target.value);
-  };
-
-  const handleClick = (e) => {
-    setIdOrderToShow(e.target.getAttribute("data-itemtoshow"));
-  };
-
-  useEffect(() => {
-    if (newStatus && idOrderToShow) {
-      changeOrderStatus(token, idOrderToShow, { status: newStatus }).then(
-      (res) => setActualStatus(res.order.status)
-    );
+    if (e.target.id === "status") {
+      changeOrderStatus(token, e.target.getAttribute("data-id"), {
+        status: e.target.value,
+      }).then((res) => setActualStatus(allStatus[res.order.status]));
     }
-  }, [idOrderToShow, newStatus]);
+  };
+
+  const handleClick = (e, order) => {
+    setOrderToModif(order);
+    if (e.target.getAttribute("data-item") === "show") {
+      setOpenDetails(true);
+      setActualStatus(allStatus[order.status]);
+    }
+    if (e.target.getAttribute("data-item") === "delete") setOpenDelete(true);
+  };
 
   // Le modal details d'une commandes
   const detailsModal = () => {
-    if (openDetails && allStatus && orderToShow) {
+    if (openDetails) {
       return (
         <ModalShowOrder
           handleChange={handleChange}
-          actualstatus={allStatus[actualStatus]}
+          actualstatus={allStatus[orderToModif.status]}
           status={allStatus}
-          item={orderToShow}
+          item={orderToModif}
           closeClick={() => {
             setOpenDetails(false);
-            setIdOrderToShow(null);
             setActualStatus(null);
-            setOrderToShow({});
+            setOrderToModif({});
           }}
           open={openDetails}
           className="border-0 rounded z-2 bg-transparent vw-100 vh-100 position-fixed top-0"
         />
       );
     }
+  };
+
+  // Le modal delete ainsi que les differentes methods ainsi que l'inversement du flux de données
+  const deleteModal = () => {
+    if (openDelete)
+      return (
+        <ModalDelete
+          width={400}
+          item={orderToModif}
+          open={openDelete}
+          closeClick={() => {
+            setOpenDelete(false);
+            setOrderToModif({});
+          }}
+          deleteAction={() =>
+            deleteItem(
+              "api/order/remove/",
+              isAuth().token,
+              orderToModif,
+              setTimeout(() => {
+                window.location.reload()
+              }, 3000),
+              setOpenDelete(!openDelete)
+            )
+          }
+          className="border-0 rounded position-fixed bottom-50 start-0 z-2"
+        />
+      );
   };
 
   return (
@@ -106,28 +122,28 @@ function Commandes() {
     >
       <div className="row mt-3">
         <div className="col-md-3 mx-auto p-0 mb-4">{sidebar()}</div>
-        {orders.length && (
-          <div className="col-md-9 px-1 mb-3">
-            <div className="table-responsive table-borderless table-success table-striped-columns rounded overflow-hidden">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th className="text-center">
-                      <div className="toggle-btn">
-                        <div className="inner-circle"></div>
-                      </div>
-                    </th>
-                    <th>Order ID</th>
-                    <th>Client</th>
-                    <th>status</th>
-                    <th>Total</th>
-                    <th>Adresse</th>
-                    <th>Date Commande</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="table-body">
-                  {orders.map((order, i) => (
+        <div className="col-md-9 px-1 mb-3">
+          <div className="table-responsive">
+            <table className="table table-borderless table-success table-striped-columns rounded overflow-hidden">
+              <thead>
+                <tr className="cell-1">
+                  <th className="text-center">
+                    <div className="toggle-btn">
+                      <div className="inner-circle"></div>
+                    </div>
+                  </th>
+                  <th>Order ID</th>
+                  <th>Client</th>
+                  <th>status</th>
+                  <th>Total</th>
+                  <th>Adresse</th>
+                  <th>Date Commande</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody className="table-body">
+                {orders.length > 0 &&
+                  orders.map((order, i) => (
                     <tr key={order._id} className="cell-1">
                       <td className="text-center">
                         <div className="toggle-btn">
@@ -138,7 +154,7 @@ function Commandes() {
                       <td>{order.user.name}</td>
                       <td>
                         <span className="badge bg-success">
-                          {allStatus[order.status]}
+                          {actualStatus ?? allStatus[order.status]}
                         </span>
                       </td>
                       <td>{currencyFormatter(order.amount * 100)}</td>
@@ -147,19 +163,22 @@ function Commandes() {
                       <td className="accordion" id="accordionId">
                         <Actions
                           item={order}
-                          showModal={handleClick}
+                          showModal={(e, item) => {
+                            item = order;
+                            handleClick(e, order);
+                          }}
                           urlEdit={"/admin/commandes/edit/"}
                           modalId={`key${i}`}
                         />
                       </td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-            {orderToShow && detailsModal()}
+              </tbody>
+            </table>
           </div>
-        )}
+          {orderToModif && detailsModal()}
+          {orderToModif && deleteModal()}
+        </div>
       </div>
       {orders.length === 0 && (
         <div className="alert alert-warning text-center my-5">

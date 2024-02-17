@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef } from "react";
+import React, { useState, useEffect, Fragment, useRef, useMemo } from "react";
 import {
   getProducts,
   categoriesList,
@@ -26,8 +26,8 @@ export default function Products() {
  
   // Liste des produits
   const [products, setProducts] = useState([]);
-  useEffect(() => {
-    getProducts({page: searchParams.get('page')??1}).then((res) => {
+  useMemo(() => {
+    getProducts({ page: (searchParams.get('page')??1) }).then((res) => {
       setProducts(res.products)
       setPages(res.count.pages);
     });
@@ -35,17 +35,15 @@ export default function Products() {
   
   // Liste des categories
   const [categories, setCategories] = useState([]);
-  useEffect(() => {
+  useMemo(() => {
     categoriesList().then((res) => setCategories(res));
   }, []);
   
   // eslint-disable-next-line no-use-before-define
-  const [formData, setFormData] = useState(new FormData());
-  const [idproductToModif, setIdproductToModif] = useState(null);
-  const [productToModif, setproductToModif] = useState({});
+  const [formData] = useState(new FormData());
+  const [productToModif, setProductToModif] = useState({});
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [quickEdition, setQuickEdition] = useState(false);
   const [form, setForm] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isActive, setIsActive] = useState("");
@@ -57,7 +55,7 @@ export default function Products() {
   useEffect(() => {
       setCurrentPage(parseInt(searchParams.get('page')) ?? 1)
       setIsActive('active')
-  }, [currentPage, searchParams])
+  }, [searchParams])
   
   // Pagination
   const handlePaginate = (e) => {
@@ -65,25 +63,6 @@ export default function Products() {
     let href = e.target.attributes.href.nodeValue
     navigate(href)
   }
-
-  // Au click sur supprimer recherche du produit à supprimer ou à modifier et affichage du modal
-  useEffect(() => {
-    if (idproductToModif) {
-      const productById = (product) => {
-        return product._id === idproductToModif;
-      };
-      const prod = products.find(productById);
-      setproductToModif(prod);
-      if(prod.category ) setActualCategoryId(prod.category._id);
-      setActualShipping(prod.shipping);
-      // Ouvrir le modal correspondant
-      quickEdition ? setOpenEdit(true) : setOpenDelete(true);
-    }
-    // reinitialisation de l'id apres son utilisation et de la checkbox
-    setIdproductToModif(null);
-    setQuickEdition(false);
-    // Observe les changement de l'id
-  }, [idproductToModif, quickEdition, products]);
 
   // Le modal delete ainsi que les differentes methods ainsi que l'inversement du flux de données
   const deleteModal = () => {
@@ -99,7 +78,9 @@ export default function Products() {
               "api/product/remove/",
               isAuth().token,
               productToModif,
-              navigate("/admin/products"),
+              setTimeout(() => {
+                window.location.reload()
+              }, 3000),
               setOpenDelete(!openDelete)
             )
           }
@@ -108,6 +89,7 @@ export default function Products() {
       );
   };
 
+  console.log('render..');
   // Le modal edit ainsi que les differentes methods ainsi que l'inversement du flux de données
   const editModal = () => {
     if (openEdit)
@@ -120,7 +102,6 @@ export default function Products() {
           item={productToModif}
           closeClick={() => {
             setOpenEdit(false);
-            setQuickEdition(false);
             for (let box of document.querySelectorAll("#checkToEdit"))
               box.checked = false;
           }}
@@ -130,11 +111,12 @@ export default function Products() {
                 "api/product/update/",
                 isAuth().token,
                 productToModif,
-                window.location.reload(),
+                setTimeout(() => {
+                  window.location.reload()
+                }, 3000),
                 formData,
                 document.querySelectorAll("#checkToEdit"),
-                setOpenEdit(false),
-                setQuickEdition(false)
+                setOpenEdit(false)
               );
             }
           }
@@ -156,12 +138,16 @@ export default function Products() {
   };
 
   // Checkboxs quick edit
-  const handleCheck = (e) => {
-    for (let box of document.querySelectorAll("#checkToEdit"))
-      box.checked = false;
-    e.target.checked = !quickEdition;
-    setQuickEdition(!quickEdition);
-    setIdproductToModif(e.target.getAttribute("data-iditemtoedit"));
+  const handleCheck = (e, product) => {
+    setProductToModif(product);
+    if (e.target.getAttribute('data-item') === 'edit') {
+    for (let box of document.querySelectorAll("#checkToEdit"))  box.checked = false;
+      e.target.checked = true;
+      setOpenEdit(true)
+    if(product.category ) setActualCategoryId(product.category._id);
+    setActualShipping(product.shipping);
+    }
+    if (e.target.getAttribute("data-item") === "delete") setOpenDelete(true);
   };
 
   // Initialisation of formData on form loaded
@@ -202,13 +188,18 @@ export default function Products() {
                   >
                     <ProductCard
                       product={product}
-                      onShowModal={setIdproductToModif}
+                      onShowModal={(e, item) => {
+                        item = product;
+                        handleCheck(e, product);
+                      }}
                     >
                       {user && user.role === 1 && (
                         <Fragment>
                           <CheckToEdit
-                            onCheck={handleCheck}
-                            idItem={product._id}
+                            onCheck={(e, item) => {
+                              item = product;
+                              handleCheck(e, product);
+                            }}
                           />
                         </Fragment>
                       )}

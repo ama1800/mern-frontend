@@ -18,34 +18,29 @@ export default function Categories() {
   }, []);
 
   const [open, setOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState({});
-  const [idCategoryToDelete, setIdCategoryToDelete] = useState(null);
+  const [categoryToModif, setCategoryToModif] = useState({});
 
-  useEffect(() => {
-    const catById = (category) => {
-      return category._id === idCategoryToDelete;
-    };
-    const cat = categories.find(catById);
-    setCategoryToDelete(cat);
-  }, [idCategoryToDelete, categories]);
-
-  const showModal = (e) => {
-    setIdCategoryToDelete(e.target.getAttribute("data-id"));
-    setOpen(!open);
+  const showModal = (e, category) => {
+    if(e.target.getAttribute("data-item") === 'delete'){
+      setCategoryToModif(category);
+      setOpen(true);
+    }
   };
   const leModal = () => {
     if (open)
       return (
         <ModalDelete
-          item={categoryToDelete}
+          item={categoryToModif}
           open={open}
           closeClick={() => setOpen(false)}
           deleteAction={() =>
             deleteItem(
               "api/category/remove/",
               isAuth().token,
-              categoryToDelete,
-              navigate(0),
+              categoryToModif,
+              setTimeout(() => {
+                window.location.reload()
+              }, 3000),
               setOpen(!open)
             )
           }
@@ -138,7 +133,10 @@ export default function Categories() {
                         <td className="accordion" id="accordionId">
                           <Actions
                             item={category}
-                            showModal={showModal}
+                            showModal={(e, item) => {
+                              item = category;
+                              showModal(e, category);
+                            }}
                             urlEdit={"/admin/categories/edit/"}
                             modalId={`key${i}`}
                           />
@@ -148,7 +146,7 @@ export default function Categories() {
                 </tbody>
               </table>
             </div>
-            {categoryToDelete && leModal()}
+            {categoryToModif && leModal()}
           </div>
         </div>
       </div>

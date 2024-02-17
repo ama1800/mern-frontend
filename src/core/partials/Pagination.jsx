@@ -14,7 +14,7 @@ function Pagination({ pages, currentPage, active, changePage }) {
                 </Link>
               </li>
             )}
-            {currentPage === 1 && (
+            {(!currentPage || currentPage === 1) && (
               <li className="page-item">
                 <Link className="page-link disabled-link" >
                   Précédent
@@ -42,14 +42,14 @@ function Pagination({ pages, currentPage, active, changePage }) {
               }
             })}
 
-            {currentPage < pages && (
+            {(!currentPage || currentPage < pages) && (
               <li className="page-item">
-                <Link onClick={(e) => changePage(e)} className="page-link" to={`?page=${currentPage + 1}`}>
+                <Link onClick={(e) => changePage(e)} className="page-link" to={`?page=${currentPage ? currentPage + 1: 2}`}>
                   Suivant
                 </Link>
               </li>
             )}
-            {currentPage >= pages && (
+            {currentPage  >= pages && (
               <li className="page-item">
                 <Link className="page-link disabled-link">
                   Suivant

@@ -33,7 +33,7 @@ const ModalDelete = ({item, closeClick, deleteAction, open, className}) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => deleteAction()}
+                  onClick={(item) => deleteAction(item)}
                   className="btn btn-outline-danger"
                 >
                   Confirmer

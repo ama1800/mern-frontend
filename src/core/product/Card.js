@@ -68,8 +68,8 @@ const ProductCard = ({ product, onShowModal, children }) => {
               <Link>
                 <button
                   className="btn btn-outline-lighmr-1 p-0 text-warning"
-                  onClick={(e) => onShowModal(e.target.getAttribute("data-id"))}
-                  data-id={product._id}
+                  onClick={(e, product) => onShowModal(e, product)}
+                  data-item='delete'
                 >
                   <i className="fa fa-trash w-100"></i>
                 </button>

@@ -94,7 +94,7 @@ export const deleteItem = (url, token, item = {}, nav) => {
   })
     .then(async (res) => {
       if (res.status === 204) {
-        toastr.info(`${item.name} à été supprimer.`, "", {
+        toastr.info(`L'élement à été supprimer avec succée.`, "", {
           positionClass: "toast-top-center",
         });
         nav = () => {};

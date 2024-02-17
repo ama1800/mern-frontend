@@ -15,13 +15,13 @@ export default function Home() {
   const [products, setProducts] = useState([]);
 
   const loadBestSellers = () => {
-    getProducts({ sortBy: "sold", order: "desc", limit: 6 }).then((res) =>
+    getProducts({ sortBy: "sold", product: "desc", limit: 6 }).then((res) =>
       setProductsBestSellers(res.products)
     );
   };
 
   const loadNewArrivals = () => {
-    getProducts({ sortBy: "createdAt", order: "desc", limit: 3 }).then(
+    getProducts({ sortBy: "createdAt", product: "desc", limit: 3 }).then(
       (res) => setProductsNewArrivals(res.products)
     );
   };
@@ -32,44 +32,36 @@ export default function Home() {
     getProducts().then(products => setProducts(products));
   }, []);
 
-  const [idProductToDelete, setIdProductToDelete] = useState(null);
-  const [productToDelete, setProductToDelete] = useState({});
-  const [open, setOpen] = useState(false);
+  const [productToModif, setProductToModif] = useState({});
+  const [openDelete, setOpenDelete] = useState(false);
 
-  // Au click sur supprimer recherche du produit à supprimer et affichage du modal
-  useEffect(() => {
-    if (idProductToDelete) {
-      const productById = (product) => {
-        return product._id === idProductToDelete;
-      };
-      const prod = products.find(productById);
-      setProductToDelete(prod);
-      setOpen(true);
-    }
-    // reinitialisation de l'id apres son utilisation
-    setIdProductToDelete(null);
-    // Observe les changement de l'id
-  }, [idProductToDelete, products]);
+  const handleClick = (e, product) => {
+    setProductToModif(product);
+    if (e.target.getAttribute("data-item") === "delete") setOpenDelete(true);
+  };
+
 
   // Le modal ainsi que les differentes methods ainsi que l'inversement du flux de données
   const leModal = () => {
-    if (open)
+    if (openDelete)
       return (
         <ModalDelete
           width={400}
-          item={productToDelete}
-          open={open}
-          closeClick={() => setOpen(false)}
+          item={productToModif}
+          open={openDelete}
+          closeClick={() => setOpenDelete(false)}
           deleteAction={() =>
             deleteItem(
               "api/product/remove/",
               isAuth().token,
-              productToDelete,
-              navigate(-1),
-              setOpen(!open)
+              productToModif,
+              setTimeout(() => {
+                window.location.reload()
+              }, 3000),
+              setOpenDelete(!openDelete)
             )
           }
-          className="border-0 rounded position-fixed bottom-50 start-0 z-2"
+          className="bproduct-0 rounded position-fixed bottom-50 start-0 z-2"
         />
       );
   };
@@ -95,7 +87,10 @@ export default function Home() {
               >
                 <ProductCard
                   product={product}
-                  onShowModal={setIdProductToDelete}
+                  onShowModal={(e, item) => {
+                    item = product;
+                    handleClick(e, product);
+                  }}
                 />
               </div>
             ))}
@@ -112,12 +107,15 @@ export default function Home() {
               >
                 <ProductCard
                   product={product}
-                  onShowModal={setIdProductToDelete}
+                  onShowModal={(e, item) => {
+                    item = product;
+                    handleClick(e, product);
+                  }}
                 />
               </div>
             ))}
         </div>
-        {productToDelete && leModal()}
+        {productToModif && leModal()}
       </Layout>
     </div>
   );

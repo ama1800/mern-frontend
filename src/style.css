@@ -137,12 +137,12 @@ dialog.delete {
 
 /* Commande liste */
 .cell-1 {
-  border-collapse: separate;
-  border-spacing: 0 4em;
-  background: #fff;
-  border-bottom: 5px solid transparent;
-  /*background-color: gold;*/
-  background-clip: padding-box;
+  border-bottom: 2px solid aliceblue;
+  border-left: unset;
+  border-right: unset;
+}
+tbody > tr:last-child { 
+  border-bottom: unset;
 }
 
 thead {
@@ -179,4 +179,7 @@ thead {
 
 .toggle-btn.active > .inner-circle {
   margin-left: 19px;
+}
+#actions::after{
+  margin: auto;
 }

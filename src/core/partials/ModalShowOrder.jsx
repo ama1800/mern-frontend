@@ -74,7 +74,7 @@ const ModalShowOrder = ({
                         Changement De Status
                       </label>
                       <select
-                        defaultValue={actualstatus}
+                        value={actualstatus}
                         onChange={(e) => handleChange(e)}
                         data-id={item._id}
                         name="status"

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Actions = ({item, showModal, urlEdit, modalId}) => {
 
@@ -14,7 +14,7 @@ const Actions = ({item, showModal, urlEdit, modalId}) => {
     };
 
   return (
-    <div className="accordion-item" style={{ border: 'unset', width: '50px'}}>
+    <div className="accordion-item bg-transparent border-0 m-auto" style={{ width: '45px'}}>
       <h5 className="accordion-header" id={`heading${modalId}`}>
         <button
           className="accordion-button collapsed p-2"
@@ -24,6 +24,7 @@ const Actions = ({item, showModal, urlEdit, modalId}) => {
           onClick={(e) => isActive(e)}
           aria-expanded="false"
           aria-controls={`collapse${modalId}`}
+          id="actions"
         >
         </button>
       </h5>
@@ -38,9 +39,9 @@ const Actions = ({item, showModal, urlEdit, modalId}) => {
             <li className="list-unstyled my-1 pt-2">
               <button
                 type="button"
-                className="btn btn-outline-info btn-circle btn-ms w-100"
-                onClick={(e) => showModal(e)}
-                data-itemtoshow={item._id}
+                className="btn btn-outline-primary btn-circle btn-ms w-100"
+                onClick={(e, item) => showModal(e, item)}
+                data-item='show'
               >
                 <i className="fa fa-eye"></i>{" "}
               </button>
@@ -48,9 +49,9 @@ const Actions = ({item, showModal, urlEdit, modalId}) => {
             <li className="list-unstyled my-1">
               <button
                 type="button"
-                className="btn btn-outline-info btn-circle btn-ms w-100"
-                onClick={(e) => showModal(e)}
-                data-itemtodelete={item._id}
+                className="btn btn-outline-danger btn-circle btn-ms w-100"
+                onClick={(e, item) => showModal(e, item)}
+                data-item='delete'
               >
                 <i className="fa fa-trash"></i>{" "}
               </button>
@@ -59,7 +60,7 @@ const Actions = ({item, showModal, urlEdit, modalId}) => {
               <Link to={`${urlEdit}${item._id}`}>
                 <button
                   type="button"
-                  className="btn btn-outline-info btn-circle btn-ms w-100"
+                  className="btn btn-outline-warning btn-circle btn-ms w-100"
                 >
                   <i className="fa fa-edit"></i>{""}
                 </button>

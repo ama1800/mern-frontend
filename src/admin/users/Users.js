@@ -7,6 +7,7 @@ import moment from "moment";
 import ModalDelete from "../../core/partials/ModalDelete";
 import { deleteItem, upUserRole } from "../../core/api/apiCore";
 import { useNavigate } from "react-router-dom";
+import Actions from "../../core/partials/Actions";
 
 export default function Users() {
   const navigate = useNavigate();
@@ -33,19 +34,21 @@ export default function Users() {
 
   useMemo(() => usersList(), []);
 
-  useEffect(() => {
-    if (idUserToModif) {
-      const userById = (user) => {
-        return user._id === idUserToModif;
-      };
-      const user = users.find(userById);
-      setUserToModif(user);
-    }
-  }, [idUserToModif]);
+  // useEffect(() => {
+  //   if (idUserToModif) {
+  //     const userById = (user) => {
+  //       return user._id === idUserToModif;
+  //     };
+  //     const user = users.find(userById);
+  //     setUserToModif(user);
+  //   }
+  // }, [idUserToModif]);
 
-  const showModal = (e) => {
-    setIdUserToModif(e.target.getAttribute("data-id"));
-    setOpen(!open);
+  const showModal = (e, user) => {
+    if(e.target.getAttribute("data-item") === 'delete'){
+      setUserToModif(user);
+      setOpen(true);
+    }
   };
 
   const handleChange = (e, user) => {
@@ -68,7 +71,6 @@ export default function Users() {
           open={open}
           closeClick={() => {
             setOpen(false);
-            setIdUserToModif(null);
             setUserToModif({});
           }}
           deleteAction={() =>
@@ -178,34 +180,18 @@ export default function Users() {
                             </option>
                           </select>
                         </td>
-                        <td>
-                          <button
-                            type="button"
-                            className="btn btn-outline-info btn-circle btn-ms"
-                          >
-                            <i className="fa fa-key"></i>{" "}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-outline-info btn-circle btn-ms ml-1"
-                            onClick={(e) => showModal(e)}
-                            data-id={user._id}
-                          >
-                            <i className="fa fa-trash"></i>{" "}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-outline-info btn-circle btn-ms ml-1"
-                          >
-                            <i className="fa fa-edit"></i>{" "}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-outline-info btn-circle btn-ms ml-1"
-                          >
-                            <i className="fa fa-upload"></i>{" "}
-                          </button>
-                        </td>
+                        
+                      <td className="accordion" id="accordionId">
+                        <Actions
+                          item={user}
+                          showModal={(e, item) => {
+                            item = user;
+                            showModal(e, user);
+                          }}
+                          urlEdit={"/admin/commandes/edit/"}
+                          modalId={`key${i}`}
+                        />
+                      </td>
                       </tr>
                     ))}
                 </tbody>
